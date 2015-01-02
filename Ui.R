@@ -1,17 +1,30 @@
 library(shiny)
-library(rCharts)
 
 shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE, 
                    collapsible = TRUE, windowTitle = "R.Stats",
                    
                    tabPanel("Plot",
-                            showOutput("plot_timeline", "morris")
-                            ),
-                   
-                   tabPanel("Summary"
+                            htmlOutput("plot_timeline"),
+                            
+                            selectInput("geo_package", "Select package", 
+                                        choices = gsub("stats_","", gsub(".Rdata","",list.files("./data/", pattern = "*.Rdata")))),
+                            htmlOutput("plot_map"),
+                            
+                            selectInput("pie_vars", "Select variable", selected = "r_arch",
+                                        choices = c("R version"="r_version",
+                                                    "Architecture"="r_arch",
+                                                    "OS"="r_os",
+                                                    "Country"="country")),
+                            htmlOutput("plot_pie"),
+                            
+                            selectInput("hist_vars", "Select variable", selected = "r_version",
+                                        choices = c("R version"="r_version",
+                                                    "Architecture"="r_arch",
+                                                    "OS"="r_os",
+                                                    "Country"="country")),
+                            htmlOutput("plot_hist")
                             
                             ),
-                   
                    
                    tabPanel("Table",
                             selectInput("dt_package",label = "Select package", 
@@ -19,5 +32,5 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                             dataTableOutput("dt_rawdata")
                             ),
                    
-  includeCSS("./www/style.css")
+  tags$head(includeCSS("./www/style.css"))
 ))
