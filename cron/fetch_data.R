@@ -3,7 +3,7 @@
 library(sqldf)
 library(data.table)
 library(R.utils)
-library(dplyr)
+library(plyr)
 
 #------------------------------------------------------------------------
 # DOWNLOAD DL LOG FILES
@@ -77,7 +77,9 @@ if(!is.null(last_date) && last_date != dates[length(dates)]) {
     gunzip(paste0(getwd(),"/data/raw/",f), temporary = F, skip = T, remove = F)
     f2<- paste0(getwd(),"/data/raw/", gsub(".gz", "", x = missing_files[i]))
     dt<- fread(f2)
-    new_data<- filter(dt, package == as.character(package))
+    # new_data<- filter(dt, package == as.character(package)) # filter() in {dplyr}
+    new_data<- subset(dt, package == as.character(package))
+    
     if(nrow(new_data)==0) {
       new_data<- data.frame(date = gsub(".csv.gz", "", x = missing_files[i]),
                             time=NA,size=NA,r_version=NA,r_arch=NA,
