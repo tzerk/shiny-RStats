@@ -1,0 +1,6 @@
+/data/raw/*
+/.Rproj.user/*
+*.RData
+*.Rhistory
+*.Rproj
+.Rproj.user
