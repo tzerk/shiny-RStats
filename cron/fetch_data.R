@@ -44,65 +44,68 @@ packages<- c("Luminescence", "numOSL")
 files_to_remove<- list.files(paste0(getwd(),"/data/raw/"), pattern = "*.csv$", full.names = TRUE)
 file.remove(files_to_remove)
 
-for(package in packages) {
-stat_files_existing<- list.files(paste0(getwd(),"/data/"), pattern = "*.Rdata")
-stat_file<- paste0("stats_", as.character(package),".Rdata")
-
-if(stat_file %in% stat_files_existing) {
-  load(paste0(getwd(), "/data/", stat_file))
-} else {
-  assign(paste0("stats_", as.character(package)), data.frame())
-}
-
-files_all<- list.files(paste0(getwd(),"/data/raw/"))
-dates<- gsub(".csv.gz","",files_all)
-
-tmp<- get(paste0("stats_", as.character(package)))
-
-last_date<- tmp$date[nrow(tmp)]
-if(!is.null(last_date)) {
-  missing_dates<- c(match(last_date, dates)+1,length(dates))
-  missing_files<- files_all[missing_dates[1]:missing_dates[2]]
-} else {
-  last_date<- gsub(".csv.gz","",files_all[1])
-  missing_files<- files_all
-}
-
-if(!is.null(last_date) && last_date != dates[length(dates)]) {
+for(p in packages) {
+  stat_files_existing<- list.files(paste0(getwd(),"/data/"), pattern = "*.Rdata")
+  stat_file<- paste0("stats_", as.character(p),".Rdata")
   
-  data<- data.frame()
-  pb<- txtProgressBar(min = 0,  max = length(missing_files), initial = 0, char = "=",
-                      width = NA, title, label, style = 3, file = "")
-  
-  for(i in 1:length(missing_files)) {
-    # fread in {data.table}
-    f<- missing_files[i]
-    gunzip(paste0(getwd(),"/data/raw/",f), temporary = F, skip = T, remove = F)
-    f2<- paste0(getwd(),"/data/raw/", gsub(".gz", "", x = missing_files[i]))
-    dt<- fread(f2)
-    # new_data<- filter(dt, package == as.character(package)) # filter() in {dplyr}
-    new_data<- subset(dt, package == as.character(package))
-    
-    if(nrow(new_data)==0) {
-      new_data<- data.frame(date = gsub(".csv.gz", "", x = missing_files[i]),
-                            time=NA,size=NA,r_version=NA,r_arch=NA,
-                            r_os=NA,package=NA,version=NA,
-                            country=NA,ip_id=NA)
-    }
-    data<- rbind(data, new_data)
-    file.remove(f2)
-    closeAllConnections()
-    setTxtProgressBar(pb, i)
+  if(stat_file %in% stat_files_existing) {
+    load(paste0(getwd(), "/data/", stat_file))
+  } else {
+    assign(paste0("stats_", as.character(p)), data.frame())
   }
-  assign(paste0("stats_", as.character(package)),
-         rbind(get(paste0("stats_", as.character(package))), data))
   
-  save(list = paste0("stats_", as.character(package)), file = paste0(getwd(), "/data/stats_", as.character(package), ".Rdata"))
+  files_all<- list.files(paste0(getwd(),"/data/raw/"))
+  dates<- gsub(".csv.gz","",files_all)
   
-  close(pb)
-} else {
-  print(paste0("stats_", as.character(package) ," is up-to-date!"))
+  tmp<- get(paste0("stats_", as.character(p)))
+  
+  last_date<- tmp$date[nrow(tmp)]
+  if(!is.null(last_date)) {
+    missing_dates<- c(match(last_date, dates)+1,length(dates))
+    missing_files<- files_all[missing_dates[1]:missing_dates[2]]
+  } else {
+    last_date<- gsub(".csv.gz","",files_all[1])
+    missing_files<- files_all
+  }
+  
+  if(!is.null(last_date) && last_date != dates[length(dates)]) {
+    
+    data<- data.frame(date=NA,time=NA,size=NA,r_version=NA,r_arch=NA,
+                      r_os=NA,package=NA,version=NA,
+                      country=NA,ip_id=NA)
+
+pb<- txtProgressBar(min = 0,  max = length(missing_files), initial = 0, char = "=",
+                    width = NA, title, label, style = 3, file = "")
+
+for(i in 1:length(missing_files)) {
+  # fread in {data.table}
+  f<- missing_files[i]
+  gunzip(paste0(getwd(),"/data/raw/",f), temporary = F, skip = T, remove = F)
+  f2<- paste0(getwd(),"/data/raw/", gsub(".gz", "", x = missing_files[i]))
+  dt<- fread(f2)
+  # new_data<- filter(dt, p == as.character(p)) # filter() in {dplyr}
+  new_data<- subset(dt, package == p)
+  
+  if(nrow(new_data)==0) {
+    new_data<- data.frame(date = gsub(".csv.gz", "", x = missing_files[i]),
+                          time=NA,size=NA,r_version=NA,r_arch=NA,
+                          r_os=NA,package=NA,version=NA,
+                          country=NA,ip_id=NA)
+  }
+  data<- rbind(data, new_data)
+  file.remove(f2)
+  closeAllConnections()
+  setTxtProgressBar(pb, i)
 }
+assign(paste0("stats_", as.character(p)),
+       rbind(get(paste0("stats_", as.character(p))), data))
+
+save(list = paste0("stats_", as.character(p)), file = paste0(getwd(), "/data/stats_", as.character(p), ".Rdata"))
+
+close(pb)
+  } else {
+    print(paste0("stats_", as.character(p) ," is up-to-date!"))
+  }
 }
 
 rm(list=ls())
