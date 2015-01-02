@@ -2,7 +2,7 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                    collapsible = TRUE, windowTitle = "R.Stats",
                    
                    tabPanel("Plot",
-                            textOutput(outputId = "text")
+                            showOutput("plot_timeline", "morris")
                             ),
                    
                    tabPanel("Summary"
@@ -10,8 +10,10 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                             ),
                    
                    
-                   tabPanel("Table" 
-                            
+                   tabPanel("Table",
+                            selectInput("dt_package",label = "Select package", 
+                                        choices = gsub("stats_","", gsub(".Rdata","",list.files("./data/", pattern = "*.Rdata")))),
+                            dataTableOutput("dt_rawdata")
                             ),
                    
   includeCSS("./www/style.css")
