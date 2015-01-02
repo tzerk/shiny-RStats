@@ -1,3 +1,6 @@
+library(shiny)
+library(rCharts)
+
 shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE, 
                    collapsible = TRUE, windowTitle = "R.Stats",
                    
