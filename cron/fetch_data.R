@@ -1,6 +1,5 @@
 #------------------------------------------------------------------------
 # SETTINGS
-library(sqldf)
 library(data.table)
 library(R.utils)
 library(plyr)
