@@ -10,27 +10,18 @@ shinyServer(function(input, output, session) {
   val<- reactiveValues(height="100%", width="100%")
   
   observeEvent(input$dim, {
-    
     if(val$height=="100%" || val$width=="100%") {
       val$height<- val$width<- 0
     }
-    
     if(abs(val$height-input$dim[2]/2) > 100) {
       val$height<- input$dim[2]/2
     }
-    
-    print(paste(val$width,input$dim[1]/2))
-    
     if(abs(val$width-input$dim[1]/2) > 100) {
       val$width<- input$dim[1]/2
     }
-    
   })
   
   output$plot_timeline<- renderGvis({
-
-    #print(paste(val$height, val$width))
-    
     df_Lum<- as.data.frame(table(stats_Luminescence$date))
     df_numOSL<- as.data.frame(table(stats_numOSL$date))
     
@@ -66,6 +57,6 @@ shinyServer(function(input, output, session) {
   })
   
   output$dt_rawdata<- renderDataTable({
-    get(paste0("stats_", input$dt_package))
+    setorder(get(paste0("stats_", input$dt_package)), -date)
   })
 })
