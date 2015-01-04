@@ -61,6 +61,7 @@ shinyServer(function(input, output, session) {
   
   output$plot_pie<- renderGvis({
     df<- arrange(as.data.frame(table(subset(get(paste0("stats_",input$geo_package)), select = input$pie_vars))), Freq, Var1)
+    df<- setorder(as.data.table(df), -Freq)
     gvisPieChart(df,
                  options=list(width=val$width, height=val$height))
     
@@ -68,6 +69,7 @@ shinyServer(function(input, output, session) {
   
   output$plot_hist<- renderGvis({
     df<- arrange(as.data.frame(table(subset(get(paste0("stats_",input$geo_package)), select = input$hist_vars))), Var1, Freq)
+    df<- setorder(as.data.table(df), -Freq)
     gvisColumnChart(df, options=list(width=val$width, height=val$height))
   })
   
