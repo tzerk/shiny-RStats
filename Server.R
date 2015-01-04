@@ -4,6 +4,7 @@ library(googleVis)
 library(plyr)
 library(data.table)
 library(shiny)
+library(zoo)
 
 shinyServer(function(input, output, session) {
   
@@ -25,14 +26,28 @@ shinyServer(function(input, output, session) {
     df_Lum<- as.data.frame(table(stats_Luminescence$date))
     df_numOSL<- as.data.frame(table(stats_numOSL$date))
     
+    if(input$tl_rmean==TRUE) {
+      df_Lum<- zoo(df_Lum$Freq, df_Lum$Var1)
+      df_numOSL<- zoo(df_numOSL$Freq, df_numOSL$Var1)
+      
+      df_Lum<- as.data.frame(rollmean(df_Lum, input$tl_rmean_val))
+      df_numOSL<- as.data.frame(rollmean(df_numOSL, input$tl_rmean_val))
+      
+      df_Lum<- data.frame(Date=row.names(df_Lum), Value=df_Lum[,1])
+      df_numOSL<- data.frame(Date=row.names(df_numOSL), Value=df_numOSL[,1])
+    }
+    
     df<- rbind(transform(df_Lum, package="Luminescence"), transform(df_numOSL, package="numOSL"))
     df<- transform(df, Title=NA, Annotation=NA)
     colnames(df)<- c("Date", "Value", "Package", "Title", "Annotation")
+    
+    
     
     gvisAnnotationChart(df, datevar="Date",
                         numvar="Value", idvar="Package",
                         titlevar="Title", annotationvar="Annotation",
                         options=list(displayAnnotations=TRUE,
+                                     colors="['blue', 'red']",
                                      legendPosition='newRow',
                                      width=val$width, height=val$height))
   })
@@ -40,8 +55,8 @@ shinyServer(function(input, output, session) {
   output$plot_map<- renderGvis({
     df<- as.data.frame(table(get(paste0("stats_",input$geo_package))$country))
     gvisGeoChart(df, locationvar="Var1", colorvar="Freq",
-                        options=list(projection="kavrayskiy-vii",
-                                     width=val$width, height=val$height))
+                 options=list(projection="kavrayskiy-vii",
+                              width=val$width, height=val$height))
   })
   
   output$plot_pie<- renderGvis({

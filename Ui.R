@@ -13,6 +13,13 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                                                           "Pie Chart"="plot_pie",
                                                           "Histogram"="plot_hist")),
                                            hr(),
+                                           conditionalPanel("input.toggle_plot=='plot_timeline'",
+                                                            checkboxInput("tl_rmean","Rolling mean",FALSE),
+                                                            conditionalPanel("input.tl_rmean==true",
+                                                                             sliderInput("tl_rmean_val","Width of rolling window (days)",
+                                                                                         min = 3, max = 31, value = 7)
+                                           )
+                                           ),
                                            conditionalPanel("input.toggle_plot=='plot_map'",
                                                             selectInput("geo_package", "Select package", 
                                                                         choices = gsub("stats_","", gsub(".Rdata","",list.files("./data/", pattern = "*.Rdata"))))
