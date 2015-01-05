@@ -24,8 +24,8 @@ year <- as.POSIXlt(missing_days)$year + 1900
 urls <- paste0('http://cran-logs.rstudio.com/', year, '/', missing_days, '.csv.gz')
 
 # You can then use download.file to download into a directory.
-if(length(missing_days)>2) {
-  yesterday<- length(missing_days)-2
+if(length(missing_days)>1) {
+  yesterday<- length(missing_days)-1
   for(i in 1:yesterday) {
     download.file(url = urls[i], destfile = paste0(getwd(),"/data/raw/", missing_days[i],'.csv.gz'))
   }
