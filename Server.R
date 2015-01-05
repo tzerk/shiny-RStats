@@ -71,7 +71,7 @@ shinyServer(function(input, output, session) {
   output$plot_hist<- renderGvis({
     df<- arrange(as.data.frame(table(subset(get(paste0("stats_",input$geo_package)), select = input$hist_vars))), Var1, Freq)
     df<- setorder(as.data.table(df), -Freq)
-    gvisColumnChart(df, options=list(width=val$width, height=val$height))
+    gvisColumnChart(df, options=list(width=val$width, height=ifelse(val$width=="100%","200%",val$width/2)))
   })
   
   output$dt_rawdata<- renderDataTable({
