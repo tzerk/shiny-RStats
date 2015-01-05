@@ -18,7 +18,7 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                                                             conditionalPanel("input.tl_rmean==true",
                                                                              sliderInput("tl_rmean_val","Width of rolling window (days)",
                                                                                          min = 3, max = 31, value = 7)
-                                           )
+                                                            )
                                            ),
                                            conditionalPanel("input.toggle_plot=='plot_map'",
                                                             selectInput("geo_package", "Select package", 
@@ -40,24 +40,31 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                                            )
                               ),
                               mainPanel(
+                                tags$div(id="plot_wrapper", align="center",
                                 conditionalPanel("input.toggle_plot=='plot_timeline'",
                                                  # PLOT 1
-                                                 textOutput("js"),
+                                                 helpText(HTML("<center><h4><b>R</b> package downloads by date</h4>")),
                                                  htmlOutput("plot_timeline")
                                 ),
                                 conditionalPanel("input.toggle_plot=='plot_map'",
                                                  # PLOT 2
+                                                 helpText(HTML("<center><h4>World map of <b>R</b> package downloads</h4>")),
                                                  htmlOutput("plot_map")
                                 ),
                                 conditionalPanel("input.toggle_plot=='plot_pie'",
                                                  # PLOT 3
+                                                 helpText(HTML("<center><h4>Pie chart <b>R</b> package download statistics</h4>")),
                                                  htmlOutput("plot_pie")
                                 ),
                                 conditionalPanel("input.toggle_plot=='plot_hist'",
                                                  # PLOT 4
+                                                 helpText(HTML("<center><h4>Histogram <b>R</b> package download statistics</h4>")),
                                                  htmlOutput("plot_hist")
-                                )
+                                ),
+                                htmlOutput("info_timeline")
                               )
+                              )
+                              
                             )
                    ),
                    
