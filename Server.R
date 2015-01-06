@@ -29,7 +29,8 @@ shinyServer(function(input, output, session) {
   })
   
   output$plot_timeline<- renderGvis({
-    
+    input$ab_plot
+    isolate({
     df<- sapply(input$tl_package, function(x){ as.data.frame(table(get(paste0("stats_",x))$date)) }, simplify = F)
     
     if(input$tl_rmean==TRUE) {
@@ -53,6 +54,7 @@ shinyServer(function(input, output, session) {
                         options=list(displayAnnotations=TRUE,
                                      legendPosition='newRow',
                                      width=val$width, height=ifelse(val$width=="100%","200%",val$width/2)))
+    })
   })
   
   output$plot_map<- renderGvis({

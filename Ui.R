@@ -41,7 +41,8 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                                                                                     "Architecture"="r_arch",
                                                                                     "OS"="r_os",
                                                                                     "Country"="country"))
-                                           )
+                                           ),
+                                           actionButton("ab_plot","  Redraw plot", class = "btn-primary")
                               ),
                               mainPanel(
                                 tags$div(id="plot_wrapper", align="center",
