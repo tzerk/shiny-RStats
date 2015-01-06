@@ -51,7 +51,6 @@ shinyServer(function(input, output, session) {
                         numvar="Value", idvar="Package",
                         titlevar="Title", annotationvar="Annotation",
                         options=list(displayAnnotations=TRUE,
-                                     colors="['blue', 'red']",
                                      legendPosition='newRow',
                                      width=val$width, height=ifelse(val$width=="100%","200%",val$width/2)))
   })
