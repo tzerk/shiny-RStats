@@ -25,22 +25,19 @@ shinyServer(function(input, output, session) {
   
   output$info_timeline<- renderText({
     paste("<center>Observation period:",stats_Luminescence$date[1],"to",stats_Luminescence$date[length(stats_Luminescence$date)],"<br>",
-          "Total downloads: 'Luminescence' =", nrow(stats_Luminescence), "| 'numOSL' =", nrow(stats_numOSL))
+          "Total downloads:",paste0("'",input$tl_package,"'")," =", nrow(get(paste0("stats_",input$tl_package))))
   })
   
   output$plot_timeline<- renderGvis({
-    df_Lum<- as.data.frame(table(stats_Luminescence$date))
-    df_numOSL<- as.data.frame(table(stats_numOSL$date))
+    df_Lum<- as.data.frame(table(get(paste0("stats_",input$tl_package))$date))
     
     if(input$tl_rmean==TRUE) {
       df_Lum<- zoo(df_Lum$Freq, df_Lum$Var1)
-      df_numOSL<- zoo(df_numOSL$Freq, df_numOSL$Var1)
       df_Lum<- as.data.frame(rollmean(df_Lum, input$tl_rmean_val))
-      df_numOSL<- as.data.frame(rollmean(df_numOSL, input$tl_rmean_val))
       df_Lum<- data.frame(Date=row.names(df_Lum), Value=df_Lum[,1])
-      df_numOSL<- data.frame(Date=row.names(df_numOSL), Value=df_numOSL[,1])
     }
-    df<- rbind(transform(df_Lum, package="Luminescence"), transform(df_numOSL, package="numOSL"))
+    #df<- rbind(transform(df_Lum, package="Luminescence"), transform(df_shiny, package="shiny"))
+    df<-transform(df_Lum, package="Luminescence")
     df<- transform(df, Title=NA, Annotation=NA)
     colnames(df)<- c("Date", "Value", "Package", "Title", "Annotation")
     
