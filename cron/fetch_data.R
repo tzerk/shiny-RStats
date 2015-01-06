@@ -38,7 +38,7 @@ rm(list=ls())
 
 #------------------------------------------------------------------------
 # FETCH DATA FOR ALL PACKAGES
-packages<- c("Luminescence", "numOSL")
+packages<- c("Luminescence", "shiny")
 
 files_to_remove<- list.files(paste0(getwd(),"/data/raw/"), pattern = "*.csv$", full.names = TRUE)
 file.remove(files_to_remove)
