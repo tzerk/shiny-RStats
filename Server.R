@@ -29,19 +29,25 @@ shinyServer(function(input, output, session) {
   })
   
   output$plot_timeline<- renderGvis({
-    df_Lum<- as.data.frame(table(get(paste0("stats_",input$tl_package))$date))
+    
+    df<- sapply(input$tl_package, function(x){ as.data.frame(table(get(paste0("stats_",x))$date)) }, simplify = F)
     
     if(input$tl_rmean==TRUE) {
-      df_Lum<- zoo(df_Lum$Freq, df_Lum$Var1)
-      df_Lum<- as.data.frame(rollmean(df_Lum, input$tl_rmean_val))
-      df_Lum<- data.frame(Date=row.names(df_Lum), Value=df_Lum[,1])
+      for(i in 1:length(df)) {
+        df[[i]]<- as.data.frame(rollmean(zoo(df[[i]]$Freq, df[[i]]$Var1), input$tl_rmean_val))
+        df[[i]]<- data.frame(Date=row.names(df[[i]]), Value=df[[i]][,1])
+      }
     }
-    #df<- rbind(transform(df_Lum, package="Luminescence"), transform(df_shiny, package="shiny"))
-    df<-transform(df_Lum, package="Luminescence")
-    df<- transform(df, Title=NA, Annotation=NA)
-    colnames(df)<- c("Date", "Value", "Package", "Title", "Annotation")
     
-    gvisAnnotationChart(df, datevar="Date",
+    df2<- data.frame()
+    for(i in 1:length(df)) {
+      df2<- rbind(df2, transform(df[[i]], package=input$tl_package[i]))
+    }
+    
+    df2<- transform(df2, Title=NA, Annotation=NA)
+    colnames(df2)<- c("Date", "Value", "Package", "Title", "Annotation")
+    
+    gvisAnnotationChart(df2, datevar="Date",
                         numvar="Value", idvar="Package",
                         titlevar="Title", annotationvar="Annotation",
                         options=list(displayAnnotations=TRUE,
