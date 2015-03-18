@@ -7,7 +7,7 @@ library(shiny)
 library(zoo)
 library(threejs)
 
-countryCodeCoords <- read.delim("D:/R/Github/experimental/shiny-RStats/data/coordinates.txt")
+countryCodeCoords <- read.delim("./data/coordinates.txt")
 
 shinyServer(function(input, output, session) {
   
