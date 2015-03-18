@@ -1,5 +1,5 @@
 library(shiny)
-
+library(threejs)
 
 shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE, 
                    collapsible = TRUE, windowTitle = "R.Stats",
@@ -82,7 +82,6 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                               
                             )
                    ),
-                   
                    tabPanel("Table",
                             selectInput("dt_package",label = "Select package", 
                                         choices = gsub("stats_","", gsub(".Rdata","",list.files("./data/", pattern = "*.Rdata")))),
