@@ -5,6 +5,9 @@ library(plyr)
 library(data.table)
 library(shiny)
 library(zoo)
+library(threejs)
+
+countryCodeCoords <- read.delim("D:/R/Github/experimental/shiny-RStats/data/coordinates.txt")
 
 shinyServer(function(input, output, session) {
   
@@ -76,6 +79,16 @@ shinyServer(function(input, output, session) {
     df<- arrange(as.data.frame(table(subset(get(paste0("stats_",input$geo_package)), select = input$hist_vars))), Var1, Freq)
     df<- setorder(as.data.table(df), -Freq)
     gvisColumnChart(df, options=list(width=val$width, height=ifelse(val$width=="100%","200%",val$width/2)))
+  })
+  
+  output$plot_globe<- renderGlobe({
+    earth_dark<- system.file("images/world.jpg",package="threejs")
+    col <- list(img=earth_dark,bodycolor="#0000ff",emissive="#0000ff",lightcolor="#9999ff")
+    val <- arrange(as.data.frame(table(subset(get(paste0("stats_",input$globe_package)), select = "country"))), Var1, Freq)
+    colnames(val) <- c("code", "Freq")
+    val2 <- join(val, countryCodeCoords, by = "code")
+    args <- c(col, list(lat = val2$lat, long = val2$lon, value = val2$Freq, atmosphere = TRUE))
+    do.call("globejs", args = args)
   })
   
   output$dt_rawdata<- renderDataTable({

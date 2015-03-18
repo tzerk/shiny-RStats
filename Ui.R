@@ -11,7 +11,8 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                                                         c("Timeline"="plot_timeline",
                                                           "Worldmap"="plot_map",
                                                           "Pie Chart"="plot_pie",
-                                                          "Histogram"="plot_hist")),
+                                                          "Histogram"="plot_hist",
+                                                          "Globe"="plot_globe")),
                                            hr(),
                                            conditionalPanel("input.toggle_plot=='plot_timeline'",
                                                             selectInput("tl_package", "Select package(s)", multiple = TRUE, selected = "Luminescence",
@@ -42,32 +43,41 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                                                                                     "OS"="r_os",
                                                                                     "Country"="country"))
                                            ),
+                                           conditionalPanel("input.toggle_plot=='plot_globe'",
+                                                            selectInput("globe_package", "Select package", 
+                                                                        choices = gsub("stats_","", gsub(".Rdata","",list.files("./data/", pattern = "*.Rdata"))))
+                                           ),
                                            actionButton("ab_plot","  Redraw plot", class = "btn-primary")
                               ),
                               mainPanel(
                                 tags$div(id="plot_wrapper", align="center",
-                                conditionalPanel("input.toggle_plot=='plot_timeline'",
-                                                 # PLOT 1
-                                                 helpText(HTML("<center><h4><b>R</b> package downloads by date</h4>")),
-                                                 htmlOutput("plot_timeline")
-                                ),
-                                conditionalPanel("input.toggle_plot=='plot_map'",
-                                                 # PLOT 2
-                                                 helpText(HTML("<center><h4>World map of <b>R</b> package downloads</h4>")),
-                                                 htmlOutput("plot_map")
-                                ),
-                                conditionalPanel("input.toggle_plot=='plot_pie'",
-                                                 # PLOT 3
-                                                 helpText(HTML("<center><h4>Pie chart <b>R</b> package download statistics</h4>")),
-                                                 htmlOutput("plot_pie")
-                                ),
-                                conditionalPanel("input.toggle_plot=='plot_hist'",
-                                                 # PLOT 4
-                                                 helpText(HTML("<center><h4>Histogram <b>R</b> package download statistics</h4>")),
-                                                 htmlOutput("plot_hist")
-                                ),
-                                htmlOutput("info_timeline")
-                              )
+                                         conditionalPanel("input.toggle_plot=='plot_timeline'",
+                                                          # PLOT 1
+                                                          helpText(HTML("<center><h4><b>R</b> package downloads by date</h4>")),
+                                                          htmlOutput("plot_timeline")
+                                         ),
+                                         conditionalPanel("input.toggle_plot=='plot_map'",
+                                                          # PLOT 2
+                                                          helpText(HTML("<center><h4>World map of <b>R</b> package downloads</h4>")),
+                                                          htmlOutput("plot_map")
+                                         ),
+                                         conditionalPanel("input.toggle_plot=='plot_pie'",
+                                                          # PLOT 3
+                                                          helpText(HTML("<center><h4>Pie chart <b>R</b> package download statistics</h4>")),
+                                                          htmlOutput("plot_pie")
+                                         ),
+                                         conditionalPanel("input.toggle_plot=='plot_hist'",
+                                                          # PLOT 4
+                                                          helpText(HTML("<center><h4>Histogram <b>R</b> package download statistics</h4>")),
+                                                          htmlOutput("plot_hist")
+                                         ),
+                                         conditionalPanel("input.toggle_plot=='plot_globe'",
+                                                          # PLOT 5
+                                                          helpText(HTML("<center><h4>WebGL Globe <b>R</b> package download statistics</h4>")),
+                                                          globeOutput("plot_globe")
+                                                          ),
+                                         htmlOutput("info_timeline")
+                                )
                               )
                               
                             )
