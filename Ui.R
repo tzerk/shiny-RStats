@@ -1,5 +1,6 @@
 library(shiny)
 library(threejs)
+library(RLumShiny)
 
 shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE, 
                    collapsible = TRUE, windowTitle = "R.Stats",
@@ -28,6 +29,8 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                                                                         choices = gsub("stats_","", gsub(".Rdata","",list.files("./data/", pattern = "*.Rdata"))))
                                            ),
                                            conditionalPanel("input.toggle_plot=='plot_pie'",
+                                                            selectInput("pie_package", "Select package(s)", multiple = FALSE, selected = "Luminescence",
+                                                                        choices = gsub("stats_","", gsub(".Rdata","",list.files("./data/", pattern = "*.Rdata")))),
                                                             selectInput("pie_vars", "Select variable", selected = "r_arch",
                                                                         choices = c("Package version"="version",
                                                                                     "R version"="r_version",
@@ -36,6 +39,8 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                                                                                     "Country"="country"))
                                            ),
                                            conditionalPanel("input.toggle_plot=='plot_hist'",
+                                                            selectInput("hist_package", "Select package(s)", multiple = FALSE, selected = "Luminescence",
+                                                                        choices = gsub("stats_","", gsub(".Rdata","",list.files("./data/", pattern = "*.Rdata")))),
                                                             selectInput("hist_vars", "Select variable", selected = "version",
                                                                         choices = c("Package version"="version",
                                                                                     "R version"="r_version",
@@ -44,6 +49,10 @@ shinyUI(navbarPage(title = "R.Lum Statistics", inverse = TRUE,
                                                                                     "Country"="country"))
                                            ),
                                            conditionalPanel("input.toggle_plot=='plot_globe'",
+                                                            div(id = "globe_slider", 
+                                                              sliderInput("globe_scale", "Data scaling (%)", 0, 200, 100, 1)
+                                                            ),
+                                                            tooltip(refId = "globe_slider", "For finer adjustment of the slider you can use the left and right arrow key on your keyboard!"),
                                                             selectInput("globe_package", "Select package", 
                                                                         choices = gsub("stats_","", gsub(".Rdata","",list.files("./data/", pattern = "*.Rdata"))))
                                            ),
