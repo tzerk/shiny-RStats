@@ -5,7 +5,7 @@ library(plyr)
 library(data.table)
 library(shiny)
 library(zoo)
-library(threejs)
+library(threejs) # https://github.com/bwlewis/rthreejs
 
 countryCodeCoords <- read.delim("./data/coordinates.txt")
 
