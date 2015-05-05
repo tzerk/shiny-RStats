@@ -11,7 +11,6 @@ library(plyr)
 # Here's an easy way to get all the URLs in R
 start <- as.Date('2012-10-01')
 today <- as.Date(format(Sys.time(), "%Y-%m-%d"))
-#today<- as.Date('2013-02-01')
 
 all_days <- seq(start, today, by = 'day')
 
@@ -20,7 +19,6 @@ missing_days <- setdiff(all_days, as.Date(tools::file_path_sans_ext(dir(path = p
 missing_days <- format(as.POSIXct.Date(missing_days), "%Y-%m-%d")
 
 year <- as.POSIXlt(missing_days)$year + 1900
-
 urls <- paste0('http://cran-logs.rstudio.com/', year, '/', missing_days, '.csv.gz')
 
 # You can then use download.file to download into a directory.
@@ -38,7 +36,7 @@ rm(list=ls())
 
 #------------------------------------------------------------------------
 # FETCH DATA FOR ALL PACKAGES
-packages<- c("Luminescence", "shiny", "ggplot2", "dplyr", "googleVis", "data.table", "digest", "RLumShiny")
+packages<- c("Luminescence", "shiny", "ggplot2", "dplyr", "googleVis", "data.table", "RLumShiny")
 
 files_to_remove<- list.files(paste0(getwd(),"/data/raw/"), pattern = "*.csv$", full.names = TRUE)
 file.remove(files_to_remove)
@@ -81,24 +79,36 @@ for(p in packages) {
       f<- missing_files[i]
       gunzip(paste0(getwd(),"/data/raw/",f), temporary = F, skip = T, remove = F)
       f2<- paste0(getwd(),"/data/raw/", gsub(".gz", "", x = missing_files[i]))
-      dt<- fread(f2, sep = ",", header = TRUE, 
-                 stringsAsFactors = FALSE, 
-                 colClasses=c("character","character","integer","character","character",
-                              "character","character","character","character","integer"))
+      dt<- tryCatch({
+        fread(f2, sep = ",", header = TRUE, stringsAsFactors = FALSE, 
+              colClasses=c("character","character","integer","character","character",
+                           "character","character","character","character","integer"))
+      }, error = function(e) {
+        message(print("There was a problem with file", e))
+      })
+      
+      if (inherits(dt, "error")) {
+        try(file.remove(f2))
+        closeAllConnections()
+        setTxtProgressBar(pb, i)
+        next
+      }
+        
       # new_data<- filter(dt, p == as.character(p)) # filter() in {dplyr}
       new_data<- subset(dt, package == p)
       
       if(nrow(new_data)==0) {
         new_data<- data.frame(date = gsub(".csv.gz", "", x = missing_files[i]),
-                              time=NA,size=NA,r_version=NA,r_arch=NA,
-                              r_os=NA,package=NA,version=NA,
-                              country=NA,ip_id=NA)
+                              time = NA ,size = NA, r_version = NA, r_arch = NA,
+                              r_os = NA, package = NA, version = NA,
+                              country = NA, ip_id = NA)
       }
       data<- rbind(data, new_data)
       file.remove(f2)
       closeAllConnections()
       setTxtProgressBar(pb, i)
-    }
+    }#EndOf::for loop
+    
     assign(paste0("stats_", as.character(p)),
            rbind(get(paste0("stats_", as.character(p))), data))
     
