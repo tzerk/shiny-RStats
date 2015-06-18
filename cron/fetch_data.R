@@ -25,7 +25,12 @@ urls <- paste0('http://cran-logs.rstudio.com/', year, '/', missing_days, '.csv.g
 if(length(missing_days)>2) {
   yesterday<- length(missing_days)-2
   for(i in 1:yesterday) {
-    download.file(url = urls[i], destfile = paste0(getwd(),"/data/raw/", missing_days[i],'.csv.gz'))
+    tryCatch(
+      expr = download.file(url = urls[i], 
+                           destfile = paste0(getwd(),"/data/raw/", missing_days[i],'.csv.gz')),
+      error = function(e){
+        print(e)
+      })
   }
 } else {
   print("Log files are up-to-date!")
@@ -58,7 +63,11 @@ for(p in packages) {
   
   last_date<- tmp$date[nrow(tmp)]
   if(!is.null(last_date)) {
-    missing_dates<- c(match(last_date, dates)+1,length(dates))
+    missing_dates<- c(match(last_date, dates)+1, length(dates))
+    if (any(is.na(missing_dates))) {
+      next
+    }
+    
     missing_files<- files_all[missing_dates[1]:missing_dates[2]]
   } else {
     last_date<- gsub(".csv.gz","",files_all[1])
@@ -84,10 +93,10 @@ for(p in packages) {
               colClasses=c("character","character","integer","character","character",
                            "character","character","character","character","integer"))
       }, error = function(e) {
-        message(print("There was a problem with file", e))
+        message(e)
       })
       
-      if (inherits(dt, "error")) {
+      if (inherits(dt, "try-error") || is.null(dt)) {
         try(file.remove(f2))
         closeAllConnections()
         setTxtProgressBar(pb, i)
