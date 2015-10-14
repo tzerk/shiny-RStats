@@ -41,7 +41,7 @@ rm(list=ls())
 
 #------------------------------------------------------------------------
 # FETCH DATA FOR ALL PACKAGES
-packages<- c("Luminescence", "shiny", "ggplot2", "dplyr", "googleVis", "data.table", "RLumShiny")
+packages<- c("Luminescence", "shiny", "dplyr", "googleVis", "data.table", "RLumShiny")
 
 files_to_remove<- list.files(paste0(getwd(),"/data/raw/"), pattern = "*.csv$", full.names = TRUE)
 file.remove(files_to_remove)
