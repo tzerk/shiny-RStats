@@ -61,7 +61,7 @@ for(p in packages) {
   
   tmp<- get(paste0("stats_", as.character(p)))
   
-  last_date<- na.omit(tmp$date[length(na.omit(tmp$date))])
+  last_date<- na.omit(tmp$date)[length(na.omit(tmp$date))]
   if(!is.null(last_date)) {
     missing_dates<- c(match(last_date, dates)+1, length(dates))
     if (any(is.na(missing_dates))) {
